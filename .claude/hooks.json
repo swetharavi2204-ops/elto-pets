@@ -1,0 +1,38 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/session-start.js",
+        "timeout": 5000,
+        "description": "Load SESSION-STATE.md context (backup to Claude Mem)"
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "node scripts/hooks/session-end.js",
+        "timeout": 10000,
+        "description": "Auto-save SESSION-STATE.md (backup to Claude Mem)"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "type": "command",
+        "command": "node scripts/hooks/pre-write-check.js \"$TOOL_INPUT\"",
+        "timeout": 3000,
+        "description": "Block writes with hardcoded hex, any types, console.log"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "type": "command",
+        "command": "node scripts/hooks/post-write-verify.js \"$FILE_PATH\"",
+        "timeout": 5000,
+        "description": "Run type-check after file modifications"
+      }
+    ]
+  }
+}
