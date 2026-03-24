@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elto Pets — Hero Section Prototype</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================
+       Design Tokens (mirrors globals.css)
+       ============================================ */
+    :root {
+      --color-dark: #2a1025;
+      --color-plum: #4f1e45;
+      --color-plum-hover: #3d1736;
+      --color-purple: #742c65;
+      --color-gold: #C5AB67;
+      --color-gold-light: #DBC078;
+      --color-surface: #faf7f3;
+      --color-white: #ffffff;
+
+      --font-display: 'Playfair Display', serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    /* ============================================
+       Reset
+       ============================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--color-surface);
+      color: var(--color-dark);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      font-family: inherit;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    /* ============================================
+       Hero Section — Full Viewport
+       ============================================ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(170deg, var(--color-dark) 0%, var(--color-plum) 100%);
+      overflow: hidden;
+      padding: 120px 24px 0;
+    }
+
+    /* Subtle radial glow behind the logo area for depth */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(
+        circle,
+        rgba(197, 171, 103, 0.06) 0%,
+        rgba(197, 171, 103, 0.02) 40%,
+        transparent 70%
+      );
+      pointer-events: none;
+    }
+
+    /* Soft noise texture overlay for premium feel */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* ============================================
+       Hero Content — Centered Stack
+       ============================================ */
+    .hero__content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 680px;
+    }
+
+    /* Logo placeholder — large, centered, prominent */
+    .hero__logo {
+      width: 120px;
+      height: 120px;
+      border-radius: 20px;
+      border: 2px dashed rgba(197, 171, 103, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .hero__logo svg {
+      width: 48px;
+      height: 48px;
+      color: rgba(197, 171, 103, 0.25);
+    }
+
+    /* Brand name */
+    .hero__brand {
+      font-family: var(--font-display);
+      font-size: 72px;
+      font-weight: 700;
+      letter-spacing: 14px;
+      color: var(--color-gold);
+      line-height: 1;
+      margin-bottom: 20px;
+      text-indent: 14px; /* compensate letter-spacing for visual centering */
+    }
+
+    /* Tagline: Trust . Treats . Love */
+    .hero__tagline {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      opacity: 0.85;
+      margin-bottom: 16px;
+    }
+
+    /* Divider dot-line */
+    .hero__divider {
+      width: 48px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+      opacity: 0.4;
+      margin-bottom: 20px;
+    }
+
+    /* Subtitle */
+    .hero__subtitle {
+      font-family: var(--font-body);
+      font-size: 18px;
+      font-weight: 300;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.65);
+      max-width: 480px;
+      margin-bottom: 44px;
+    }
+
+    /* ============================================
+       CTAs
+       ============================================ */
+    .hero__ctas {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 80px;
+    }
+
+    /* Shop Now — gold gradient, dark text */
+    .hero__cta-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--color-dark);
+      background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+      padding: 16px 40px;
+      border-radius: 100px;
+      transition: transform 150ms ease, box-shadow 150ms ease;
+      box-shadow: 0 4px 20px rgba(197, 171, 103, 0.3);
+    }
+
+    .hero__cta-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(197, 171, 103, 0.4);
+    }
+
+    .hero__cta-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Our Story — outline, gold border */
+    .hero__cta-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      background: transparent;
+      border: 1.5px solid rgba(197, 171, 103, 0.4);
+      padding: 15px 36px; /* adjusted for border */
+      border-radius: 100px;
+      transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+    }
+
+    .hero__cta-secondary:hover {
+      border-color: var(--color-gold);
+      background: rgba(197, 171, 103, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .hero__cta-secondary:active {
+      transform: translateY(0);
+    }
+
+    /* ============================================
+       Stats Bar — anchored at bottom
+       ============================================ */
+    .hero__stats {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 800px;
+      margin-top: auto;
+      padding-bottom: 48px;
+    }
+
+    .hero__stats-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+    }
+
+    .hero__stat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 0 24px;
+    }
+
+    /* Vertical dividers between stats */
+    .hero__stat + .hero__stat {
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hero__stat-value {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--color-gold);
+      line-height: 1;
+    }
+
+    .hero__stat-label {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    /* Top border line above stats */
+    .hero__stats-border {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(197, 171, 103, 0.2) 20%,
+        rgba(197, 171, 103, 0.2) 80%,
+        transparent 100%
+      );
+      margin-bottom: 32px;
+    }
+
+    /* ============================================
+       Responsive — Tablet
+       ============================================ */
+    @media (max-width: 768px) {
+      .hero {
+        padding: 100px 20px 0;
+      }
+
+      .hero__logo {
+        width: 96px;
+        height: 96px;
+        margin-bottom: 32px;
+      }
+
+      .hero__logo svg {
+        width: 40px;
+        height: 40px;
+      }
+
+      .hero__brand {
+        font-size: 52px;
+        letter-spacing: 10px;
+        text-indent: 10px;
+        margin-bottom: 16px;
+      }
+
+      .hero__tagline {
+        font-size: 12px;
+        letter-spacing: 4px;
+      }
+
+      .hero__subtitle {
+        font-size: 16px;
+        margin-bottom: 36px;
+      }
+
+      .hero__ctas {
+        margin-bottom: 60px;
+      }
+
+      .hero__stat-value {
+        font-size: 24px;
+      }
+
+      .hero__stat-label {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+      }
+    }
+
+    /* ============================================
+       Responsive — Mobile
+       ============================================ */
+    @media (max-width: 480px) {
+      .hero {
+        padding: 80px 16px 0;
+        min-height: 100svh; /* safe viewport height on mobile */
+      }
+
+      .hero__logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 16px;
+        margin-bottom: 28px;
+      }
+
+      .hero__logo svg {
+        width: 32px;
+        height: 32px;
+      }
+
+      .hero__brand {
+        font-size: 40px;
+        letter-spacing: 8px;
+        text-indent: 8px;
+        margin-bottom: 14px;
+      }
+
+      .hero__tagline {
+        font-size: 11px;
+        letter-spacing: 3px;
+        margin-bottom: 12px;
+      }
+
+      .hero__subtitle {
+        font-size: 15px;
+        margin-bottom: 32px;
+        padding: 0 8px;
+      }
+
+      .hero__ctas {
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+        gap: 12px;
+        margin-bottom: 48px;
+      }
+
+      .hero__cta-primary,
+      .hero__cta-secondary {
+        width: 100%;
+        justify-content: center;
+        padding: 16px 32px;
+      }
+
+      .hero__stats-inner {
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .hero__stat + .hero__stat {
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding-top: 24px;
+      }
+
+      .hero__stat {
+        padding: 0;
+      }
+
+      .hero__stats {
+        padding-bottom: 36px;
+      }
+    }
+
+    /* ============================================
+       Reduced Motion
+       ============================================ */
+    @media (prefers-reduced-motion: reduce) {
+      .hero__cta-primary,
+      .hero__cta-secondary {
+        transition: none;
+      }
+    }
+
+    /* ============================================
+       Demo: next-section preview (for context)
+       ============================================ */
+    .demo-next {
+      padding: 80px 24px;
+      text-align: center;
+      background: var(--color-surface);
+    }
+
+    .demo-next p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--color-purple);
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================
+       HERO SECTION
+       ========================================== -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero__content">
+
+      <!-- Logo placeholder -->
+      <div class="hero__logo" aria-hidden="true" title="Logo placeholder — gold brushstroke + dog silhouette">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M12 8v8M8 12h8" />
+        </svg>
+      </div>
+
+      <!-- Brand name -->
+      <h1 class="hero__brand">ELTO</h1>
+
+      <!-- Tagline -->
+      <p class="hero__tagline">Trust &middot; Treats &middot; Love</p>
+
+      <!-- Decorative divider -->
+      <div class="hero__divider" aria-hidden="true"></div>
+
+      <!-- Subtitle -->
+      <p class="hero__subtitle">
+        Premium natural dog treats, handcrafted in the UK with ingredients you can trust.
+      </p>
+
+      <!-- CTAs -->
+      <div class="hero__ctas">
+        <a href="/shop" class="hero__cta-primary">Shop Now</a>
+        <a href="/about" class="hero__cta-secondary">Our Story</a>
+      </div>
+
+    </div>
+
+    <!-- Stats bar -->
+    <div class="hero__stats">
+      <div class="hero__stats-border" aria-hidden="true"></div>
+      <div class="hero__stats-inner">
+
+        <div class="hero__stat">
+          <span class="hero__stat-value">100%</span>
+          <span class="hero__stat-label">Natural</span>
+        </div>
+
+        <div class="hero__stat">
+          <span class="hero__stat-value">UK</span>
+          <span class="hero__stat-label">Made &amp; Shipped</span>
+        </div>
+
+        <div class="hero__stat">
+          <span class="hero__stat-value">0</span>
+          <span class="hero__stat-label">Preservatives</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo section (for visual context only) -->
+  <div class="demo-next">
+    <p>[ Next section: Product Showcase ]</p>
+  </div>
+
+</body>
+</html>
