@@ -1,8 +1,8 @@
-# Elto Pets — Homepage Design Spec
+# Elto Pets — E-Commerce Website Spec
 
 ## Overview
 
-E-commerce homepage for Elto Pets, a premium natural dog treat brand selling in the UK (GBP). The homepage serves as the primary landing page combining brand storytelling with direct product sales. Built with Next.js 14+ (App Router), TypeScript, Tailwind CSS, shadcn/ui, and Supabase.
+Full e-commerce website for Elto Pets, a premium natural dog treat brand selling in the UK (GBP). The homepage serves as the primary landing page combining brand storytelling with direct product sales. Includes shop, cart, Stripe checkout, subscriptions, and user account management. Built with Next.js 14+ (App Router), TypeScript, Tailwind CSS, shadcn/ui, and Supabase.
 
 ## Brand Identity
 
@@ -10,7 +10,8 @@ E-commerce homepage for Elto Pets, a premium natural dog treat brand selling in 
 - **Tagline:** Trust . Treats . Love
 - **Logo:** Gold brushstroke "ELTO" text with dog silhouette on plum background (provided asset)
 - **Market:** UK, GDPR-compliant
-- **Tone:** Premium, confident, trustworthy — no animations
+- **Tone:** Premium, confident, trustworthy
+- **Motion:** No decorative/heavy animations. Yes to smooth CSS transitions: page fades (150ms), scroll fade-in, hover lifts (translateY -2px). All respect `prefers-reduced-motion`.
 
 ## Color Palette
 
@@ -73,7 +74,7 @@ Alternating dark/light sections for visual rhythm:
 - **Stats bar (bottom of hero):**
   - 100% Natural | UK Made & Shipped | No Preservatives
   - Gold numbers, muted white labels
-- **No animations** — static, confident, premium
+- **No decorative animations** — smooth CSS transitions only (page fades, scroll fade-in, hover lifts). Confident and premium.
 
 ### Section 2: Product Showcase
 
@@ -103,14 +104,14 @@ Alternating dark/light sections for visual rhythm:
 
 ### Section 3: Product Categories
 
-- **Background:** Subtle plum tint
-- **Layout:** 4 cards in a row (responsive: 2x2 on mobile)
+- **Background:** Subtle plum tint (#f5f0f3)
+- **Layout:** 3 cards in a row (responsive: stacked on mobile)
 - **Categories:**
   1. Air-Dried Treats
   2. Soft Chews
-  3. Small Dog Chews
-  4. Accessories
+  3. Dog Food
 - Each card: real photo, category name, click navigates to filtered shop page
+- Note: Accessories removed for now — will be added in a future phase
 
 ### Section 4: All Products Grid
 
@@ -170,17 +171,151 @@ Alternating dark/light sections for visual rhythm:
 |-------|------|---------------|-------------|
 | / | Homepage | No | Landing page with all sections above |
 | /shop | Shop | No | All products with category filters |
-| /shop/[slug] | Product Detail | No | Individual product page |
+| /shop/[slug] | Product Detail | No | Individual product with subscription toggle |
 | /about | About Us | No | Brand story |
 | /auth/login | Login | No | User login |
 | /auth/signup | Sign Up | No | User registration |
-| /cart | Cart | No | Shopping cart |
-| /checkout | Checkout | Yes | Secure checkout |
+| /cart | Cart | No | Shopping cart (persisted to Supabase for logged-in users) |
+| /checkout | Checkout | Yes | Pre-checkout confirmation → Stripe redirect |
+| /checkout/success | Success | Yes | Order confirmation after Stripe payment |
+| /checkout/cancelled | Cancelled | Yes | Friendly return page, cart preserved |
+| /account | My Account | Yes | Account dashboard overview |
+| /account/orders | Orders | Yes | Order history list |
+| /account/orders/[id] | Order Detail | Yes | Individual order details |
+| /account/saved | Saved Items | Yes | Save for later / purchase later |
+| /account/details | My Details | Yes | Saved address, mobile, email |
+| /account/subscriptions | Subscriptions | Yes | Active subscriptions management |
 | /privacy | Privacy Policy | No | GDPR-compliant privacy policy |
 | /terms | Terms & Conditions | No | T&C |
 | /returns | Return Policy | No | Return/refund policy |
 
-Note: Product detail pages, shop, cart, checkout, auth, and policy pages will be designed in subsequent specs. This spec covers the homepage only.
+---
+
+## My Account
+
+### Overview
+Authenticated users get a full account dashboard to manage orders, saved items, subscriptions, and personal details. The goal is customers never need to re-enter information.
+
+### My Account Sections
+
+#### Order History
+- List of all past orders with order number, date, status (Processing, Shipped, Delivered)
+- Click to expand: full order details (items, quantities, prices, delivery address)
+- Re-order button on each past order
+
+#### Save for Later / Purchase Later
+- Items the user saves from cart or product pages
+- Each saved item shows: product image, name, weight, price, "Move to Cart" button
+- Items removed from cart during a cancelled/abandoned Stripe checkout automatically appear here
+
+#### Saved Details
+- **Delivery address:** Full UK address, saved and pre-filled at checkout
+- **Mobile number:** Saved for delivery updates
+- **Email:** Account email (from auth)
+- Edit/update functionality for all fields
+- Multiple saved addresses supported (select default)
+
+#### Subscriptions
+- List of active subscriptions with next delivery date, frequency, product, price
+- Pause / Cancel / Change frequency controls
+- Subscription history
+
+### Account Routes
+
+| Route | Description |
+|-------|-------------|
+| /account | Dashboard overview |
+| /account/orders | Order history list |
+| /account/orders/[id] | Individual order details |
+| /account/saved | Save for later items |
+| /account/details | Saved address, mobile, email |
+| /account/subscriptions | Active subscriptions management |
+
+---
+
+## Subscriptions
+
+Every product offers an optional subscription at checkout and on product pages:
+
+- **Frequency options:** Every 2 weeks | Every 4 weeks | Every 6 weeks | Every 8 weeks
+- **Subscription discount:** 10% off the one-time price. Displayed as "Subscribe & Save 10%"
+- Toggle between "One-time purchase" and "Subscribe" on product cards and product detail page
+- Subscriptions managed via Stripe Billing (recurring payments)
+- Subscription status synced to Supabase for display in My Account
+
+---
+
+## Checkout & Stripe Integration
+
+### Cart → Checkout Flow
+
+1. **Cart page** — user reviews items, quantities, weights
+2. **User clicks "Checkout"** → must be authenticated (redirect to login/signup if not)
+3. **Pre-checkout** — saved address and details pre-filled, user confirms or edits
+4. **Stripe Checkout Session** created server-side with line items
+5. **User redirected to Stripe** hosted checkout page
+6. **On success** → redirect to /checkout/success, order created in Supabase, cart cleared
+7. **On cancel/back** → redirect to /checkout/cancelled, cart items preserved AND saved to "Save for Later" in My Account
+
+### Stripe Cancel/Back Handling (critical)
+
+When a user cancels or presses back from Stripe checkout:
+- Cart is NOT cleared — items remain in the cart
+- Items are ALSO copied to "Save for Later" in My Account as a backup
+- User sees a friendly message: "Your items are still in your cart. Ready when you are."
+- No duplicate items: if item already exists in Save for Later, don't duplicate
+
+### Stripe Integration Details
+
+- **Stripe Checkout (hosted)** — not embedded, for maximum security and PCI compliance
+- **Stripe Billing** — for subscription recurring payments
+- **Webhooks:** checkout.session.completed, customer.subscription.created, customer.subscription.updated, customer.subscription.deleted, invoice.payment_succeeded, invoice.payment_failed
+- **Stripe customer** synced to Supabase user on first checkout
+- **Currency:** GBP (£)
+- **Shipping:** UK only (configurable in Stripe)
+
+---
+
+## Workflow Integrity Rules
+
+The following rules ensure a locked, verified workflow that minimises bugs:
+
+### State Management
+- Cart state persisted to Supabase (not just local state) — survives browser close, device switch
+- Order state machine: Cart → Pending Payment → Paid → Processing → Shipped → Delivered
+- No state can be skipped — transitions are validated server-side
+- Stripe webhook is the ONLY source of truth for payment confirmation — never trust client-side redirects alone
+
+### Data Validation
+- All form inputs validated with Zod schemas (client + server)
+- API routes validate auth + input before any database operation
+- Price calculated server-side only — client displays, server validates
+- Weight/quantity changes recalculate totals server-side
+
+### Auth Guards
+- Checkout requires authentication — redirect to login with return URL
+- My Account pages all require authentication
+- Cart accessible without auth (stored in cookie/local for guests, merged on login)
+
+### Error Handling
+- Every user action has a success state, error state, and loading state
+- Stripe errors surface user-friendly messages (not raw error codes)
+- Network failures show retry option, never silent failure
+- Failed webhook deliveries: Stripe retries automatically, idempotent handlers on our side
+
+---
+
+## Transitions & UX
+
+- **Smooth CSS transitions** between pages and on scroll (no jarring jumps)
+- **Page transitions:** subtle fade (150ms) between route changes
+- **Scroll sections:** elements fade in gently on scroll into viewport (CSS only, using `@media (prefers-reduced-motion: no-preference)`)
+- **Hover states:** subtle lift (translateY -2px) on cards and buttons
+- **Loading states:** skeleton loaders matching section layout, not spinners
+- **No animated images anywhere** — all product/brand images are real photographs only
+- **No cartoon/anime/illustrated images** anywhere on the site
+
+---
 
 ## Products Data
 
@@ -195,12 +330,16 @@ Note: Product detail pages, shop, cart, checkout, auth, and policy pages will be
 
 Note: Prices are provisional — will be updated once final pricing is confirmed.
 
-### Gift Bundles
+### Gift Bundles (Customisable)
 
-| Bundle | Contents | Price |
-|--------|----------|-------|
-| 100g Taster Bundle | 3 different products, 100g each | £18.99 |
-| 200g Taster Bundle | 3 different products, 200g each | £25.99 |
+Bundles are build-your-own — customer picks any 3 products. Price is calculated dynamically based on selected products, not a fixed price.
+
+| Bundle Type | Contents | Pricing |
+|-------------|----------|---------|
+| 100g Bundle | Customer picks 3 products, 100g each | Sum of selected products' 100g prices (starting from £18.99 as reference) |
+| 200g Bundle | Customer picks 3 products, 200g each | Sum of selected products' 200g prices (starting from £25.99 as reference) |
+
+Bundle builder UI: step-by-step selection (pick product 1, 2, 3) with running total displayed.
 
 ## Responsive Breakpoints
 
@@ -210,9 +349,33 @@ Note: Prices are provisional — will be updated once final pricing is confirmed
 
 ## Technical Notes
 
-- No animations — static transitions only, no Framer Motion on homepage
-- Real product photos from web as placeholders (no cartoon/animated images)
-- Pouch images should reference Wagg-style standing pouches with front label visible
+- **No animated/cartoon/anime images anywhere** — real photographs only across entire site
+- Real product photos from web as placeholders (Wagg-style standing pouches, front visible)
+- Smooth CSS transitions only (fade, translateY) — no Framer Motion, no heavy animation libraries
+- All transitions respect `prefers-reduced-motion` media query
 - All colors via CSS variables — no hardcoded hex in components
 - GDPR: cookie consent banner, newsletter opt-in checkbox, privacy policy link
 - Currency: GBP (£)
+- **Stripe:** Hosted checkout (not embedded), Stripe Billing for subscriptions, webhook-driven order confirmation
+- **Cart persistence:** Supabase for authenticated users, cookie/localStorage for guests, merge on login
+- **Server-side price validation:** Client never determines final price — server recalculates from DB
+- Accessories category removed for now — architecture should support adding categories later without refactor
+
+---
+
+## Implementation Phases
+
+| Phase | Scope | Dependencies |
+|-------|-------|-------------|
+| 1 | Project scaffold: Next.js, Tailwind, shadcn/ui, CSS variables, Supabase schema | None |
+| 2 | Auth: Supabase Auth, login/signup pages, middleware guards | Phase 1 |
+| 3 | Homepage UI: all 8 sections (hero through footer), navbar | Phase 1 |
+| 4 | Shop & product pages: category filters, product detail, subscription toggle | Phase 1 |
+| 5 | Cart: add/remove, weight selection, persistence (guest + auth), Save for Later | Phases 2, 4 |
+| 6 | Stripe checkout: session creation, success/cancel flows, webhooks, order creation | Phases 2, 5 |
+| 7 | Subscriptions: Stripe Billing, recurring payments, account management | Phase 6 |
+| 8 | My Account: orders, saved items, details, subscriptions dashboard | Phases 2, 6, 7 |
+| 9 | Bundle builder: customisable bundles, dynamic pricing | Phase 5 |
+| 10 | Policy pages: Privacy, T&C, Returns (GDPR), cookie consent | Phase 1 |
+| 11 | Testing & QA: end-to-end flows, Stripe test mode, responsive testing | All |
+| 12 | Deploy: Vercel, production Stripe keys, domain setup | All |
