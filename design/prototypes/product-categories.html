@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elto Pets — Product Categories Prototype</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================
+       Design Tokens (mirrors globals.css)
+       ============================================ */
+    :root {
+      --color-dark: #2a1025;
+      --color-plum: #4f1e45;
+      --color-purple: #742c65;
+      --color-gold: #C5AB67;
+      --color-gold-light: #DBC078;
+      --color-surface: #faf7f3;
+      --color-surface-plum: #f5f0f3;
+      --color-white: #ffffff;
+
+      --font-display: 'Playfair Display', serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    /* ============================================
+       Reset
+       ============================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--color-surface);
+      color: var(--color-dark);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* ============================================
+       Product Categories Section
+       ============================================ */
+    .categories {
+      padding: 96px 24px;
+      background: var(--color-surface-plum);
+    }
+
+    .categories__inner {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    /* Section header */
+    .categories__header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .categories__label {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      margin-bottom: 12px;
+    }
+
+    .categories__title {
+      font-family: var(--font-display);
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--color-dark);
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .categories__subtitle {
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--color-purple);
+      opacity: 0.7;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Card grid */
+    .categories__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    /* Individual card */
+    .categories__card {
+      display: block;
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--color-white);
+      box-shadow: 0 2px 12px rgba(42, 16, 37, 0.06);
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .categories__card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(42, 16, 37, 0.1);
+    }
+
+    .categories__card:active {
+      transform: translateY(0);
+    }
+
+    /* Card image area */
+    .categories__image {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+    }
+
+    .categories__image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 300ms ease;
+    }
+
+    .categories__card:hover .categories__image img {
+      transform: scale(1.03);
+    }
+
+    /* Gradient overlay on image bottom for text legibility */
+    .categories__image::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to top, rgba(42, 16, 37, 0.5) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* Card body */
+    .categories__body {
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .categories__name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--color-dark);
+      line-height: 1.3;
+    }
+
+    .categories__count {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-purple);
+      opacity: 0.6;
+      white-space: nowrap;
+    }
+
+    /* Arrow indicator */
+    .categories__arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+      flex-shrink: 0;
+      transition: transform 150ms ease;
+    }
+
+    .categories__card:hover .categories__arrow {
+      transform: translateX(2px);
+    }
+
+    .categories__arrow svg {
+      width: 16px;
+      height: 16px;
+      color: var(--color-dark);
+    }
+
+    /* ============================================
+       Responsive — Tablet
+       ============================================ */
+    @media (max-width: 768px) {
+      .categories {
+        padding: 72px 20px;
+      }
+
+      .categories__header {
+        margin-bottom: 40px;
+      }
+
+      .categories__title {
+        font-size: 32px;
+      }
+
+      .categories__subtitle {
+        font-size: 15px;
+      }
+
+      .categories__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      /* Third card spans full width on tablet for visual balance */
+      .categories__card:last-child {
+        grid-column: 1 / -1;
+        max-width: 50%;
+        justify-self: center;
+      }
+
+      .categories__name {
+        font-size: 18px;
+      }
+
+      .categories__body {
+        padding: 20px;
+      }
+    }
+
+    /* ============================================
+       Responsive — Mobile
+       ============================================ */
+    @media (max-width: 480px) {
+      .categories {
+        padding: 56px 16px;
+      }
+
+      .categories__header {
+        margin-bottom: 32px;
+      }
+
+      .categories__label {
+        font-size: 11px;
+        letter-spacing: 2.5px;
+      }
+
+      .categories__title {
+        font-size: 28px;
+      }
+
+      .categories__subtitle {
+        font-size: 14px;
+      }
+
+      .categories__grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .categories__card:last-child {
+        grid-column: auto;
+        max-width: none;
+        justify-self: auto;
+      }
+
+      .categories__image {
+        aspect-ratio: 16 / 9;
+      }
+
+      .categories__name {
+        font-size: 18px;
+      }
+
+      .categories__body {
+        padding: 18px 16px;
+      }
+
+      .categories__arrow {
+        width: 32px;
+        height: 32px;
+      }
+
+      .categories__arrow svg {
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    /* ============================================
+       Reduced Motion
+       ============================================ */
+    @media (prefers-reduced-motion: reduce) {
+      .categories__card,
+      .categories__image img,
+      .categories__arrow {
+        transition: none;
+      }
+
+      .categories__card:hover {
+        transform: none;
+      }
+
+      .categories__card:hover .categories__image img {
+        transform: none;
+      }
+
+      .categories__card:hover .categories__arrow {
+        transform: none;
+      }
+    }
+
+    /* ============================================
+       Demo context sections
+       ============================================ */
+    .demo-prev {
+      padding: 80px 24px;
+      text-align: center;
+      background: linear-gradient(170deg, var(--color-dark) 0%, var(--color-plum) 100%);
+    }
+
+    .demo-prev p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--color-gold);
+      opacity: 0.5;
+    }
+
+    .demo-next {
+      padding: 80px 24px;
+      text-align: center;
+      background: var(--color-surface);
+    }
+
+    .demo-next p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--color-purple);
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Demo: previous section context -->
+  <div class="demo-prev">
+    <p>[ Previous section: Hero / Product Showcase ]</p>
+  </div>
+
+  <!-- ==========================================
+       PRODUCT CATEGORIES SECTION
+       ========================================== -->
+  <section class="categories" aria-label="Product categories">
+    <div class="categories__inner">
+
+      <!-- Section header -->
+      <header class="categories__header">
+        <p class="categories__label">Browse By Type</p>
+        <h2 class="categories__title">Our Categories</h2>
+        <p class="categories__subtitle">
+          From air-dried chews to wholesome kibbles, find the perfect treat for your dog.
+        </p>
+      </header>
+
+      <!-- Category cards -->
+      <div class="categories__grid" role="list">
+
+        <!-- Air-Dried Treats -->
+        <a href="/shop?category=air-dried-treats" class="categories__card" role="listitem">
+          <div class="categories__image">
+            <img
+              src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=450&fit=crop&crop=faces"
+              alt="A dog enjoying natural air-dried treats"
+              width="600"
+              height="450"
+              loading="lazy"
+            />
+          </div>
+          <div class="categories__body">
+            <div>
+              <p class="categories__name">Air-Dried Treats</p>
+              <p class="categories__count">4 products</p>
+            </div>
+            <span class="categories__arrow" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Soft Chews -->
+        <a href="/shop?category=soft-chews" class="categories__card" role="listitem">
+          <div class="categories__image">
+            <img
+              src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600&h=450&fit=crop&crop=faces"
+              alt="Dog training treats for rewarding good behaviour"
+              width="600"
+              height="450"
+              loading="lazy"
+            />
+          </div>
+          <div class="categories__body">
+            <div>
+              <p class="categories__name">Soft Chews</p>
+              <p class="categories__count">1 product</p>
+            </div>
+            <span class="categories__arrow" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Dog Food -->
+        <a href="/shop?category=dog-food" class="categories__card" role="listitem">
+          <div class="categories__image">
+            <img
+              src="https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=600&h=450&fit=crop&crop=faces"
+              alt="Premium natural dog food kibbles in a bowl"
+              width="600"
+              height="450"
+              loading="lazy"
+            />
+          </div>
+          <div class="categories__body">
+            <div>
+              <p class="categories__name">Dog Food</p>
+              <p class="categories__count">1 product</p>
+            </div>
+            <span class="categories__arrow" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo: next section context -->
+  <div class="demo-next">
+    <p>[ Next section: All Products Grid ]</p>
+  </div>
+
+</body>
+</html>

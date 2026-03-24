@@ -178,6 +178,22 @@
       transition: none;
     }
   }
+
+  /* Card shadow with hover state */
+  .card-shadow {
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--color-elto-dark) 6%, transparent);
+    transition: box-shadow 150ms ease;
+  }
+
+  .card-shadow:hover {
+    box-shadow: 0 8px 28px color-mix(in srgb, var(--color-elto-dark) 10%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-shadow {
+      transition: none;
+    }
+  }
 }
 
 /* Respect reduced motion */
